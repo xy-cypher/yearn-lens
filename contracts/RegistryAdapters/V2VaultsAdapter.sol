@@ -6,13 +6,13 @@ pragma experimental ABIEncoderV2;
 // Common imports
 import "../../interfaces/Common/IERC20.sol";
 import "../../interfaces/Common/IOracle.sol";
-import "../Utilities/Manageable.sol";
+// import "../Utilities/Manageable.sol";
 
 // Adapter-specific imports
 import "../../interfaces/Yearn/V2Vault.sol";
 import "../../interfaces/Yearn/IV2Registry.sol";
 
-contract RegisteryAdapterV2Vault is Manageable {
+contract RegisteryAdapterV2Vault {
     /**
      * Common code shared by all adapters
      */
@@ -56,27 +56,22 @@ contract RegisteryAdapterV2Vault is Manageable {
         uint256 amount;
     }
 
-    constructor(
-        address _registryAddress,
-        address _oracleAddress,
-        address _managementListAddress,
-        address[] memory _positionSpenderAddresses
-    ) Manageable(_managementListAddress) {
-        require(_registryAddress != address(0), "Missing registry address");
-        require(_oracleAddress != address(0), "Missing oracle address");
-        require(
-            _managementListAddress != address(0),
-            "Missing management list address"
-        );
-        registryAddress = _registryAddress;
-        oracle = IOracle(_oracleAddress);
-        setPositionSpenderAddresses(_positionSpenderAddresses);
+    constructor(address _registryAddress, address _oracleAddress) {
+        // require(0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804 != address(0), "Missing registry address");
+        // require(
+        //     0x9b8b9F6146B29CC32208f42b995E70F0Eb2807F3 != address(0),
+        //     "Missing oracle address"
+        // );
+        // require(
+        //     _managementListAddress != address(0),
+        //     "Missing management list address"
+        // );
+        // registryAddress = 0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804;
+        // oracle = IOracle(0x9b8b9F6146B29CC32208f42b995E70F0Eb2807F3);
+        // setPositionSpenderAddresses(_positionSpenderAddresses);
     }
 
-    function setPositionSpenderAddresses(address[] memory addresses)
-        public
-        onlyManagers
-    {
+    function setPositionSpenderAddresses(address[] memory addresses) public {
         positionSpenderAddresses = addresses;
     }
 
@@ -100,7 +95,8 @@ contract RegisteryAdapterV2Vault is Manageable {
                 name: underlyingToken.name(),
                 symbol: underlyingToken.symbol(),
                 decimals: underlyingToken.decimals(),
-                priceUsdc: oracle.getPriceUsdcRecommended(tokenAddress)
+                priceUsdc: IOracle(0x9b8b9F6146B29CC32208f42b995E70F0Eb2807F3)
+                    .getPriceUsdcRecommended(tokenAddress)
             });
         return _token;
     }
@@ -151,7 +147,8 @@ contract RegisteryAdapterV2Vault is Manageable {
     }
 
     function assetsLength() public view returns (uint256) {
-        IV2Registry registry = IV2Registry(registryAddress);
+        IV2Registry registry =
+            IV2Registry(0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804);
         uint256 numTokens = registry.numTokens();
         uint256 numVaults;
         for (uint256 i = 0; i < numTokens; i++) {
@@ -165,7 +162,8 @@ contract RegisteryAdapterV2Vault is Manageable {
     function assetsAddresses() public view returns (address[] memory) {
         uint256 numVaults = assetsLength();
         address[] memory vaultAddresses = new address[](numVaults);
-        IV2Registry registry = IV2Registry(registryAddress);
+        IV2Registry registry =
+            IV2Registry(0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804);
         uint256 numTokens = registry.numTokens();
         uint256 currentVaultIdx;
         for (uint256 tokenIdx = 0; tokenIdx < numTokens; tokenIdx++) {
@@ -190,13 +188,15 @@ contract RegisteryAdapterV2Vault is Manageable {
         uint256 amount = vault.totalAssets();
         address underlyingTokenAddress = vault.token();
         uint256 tvl =
-            oracle.getNormalizedValueUsdc(underlyingTokenAddress, amount);
+            IOracle(0x9b8b9F6146B29CC32208f42b995E70F0Eb2807F3)
+                .getNormalizedValueUsdc(underlyingTokenAddress, amount);
         return tvl;
     }
 
     function asset(address vaultAddress) public view returns (Asset memory) {
         V2Vault vault = V2Vault(vaultAddress);
-        IV2Registry registry = IV2Registry(registryAddress);
+        IV2Registry registry =
+            IV2Registry(0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804);
         uint256 totalSupply = vault.totalSupply();
         uint256 pricePerShare = 0;
         bool vaultHasShares = totalSupply != 0;
@@ -233,7 +233,8 @@ contract RegisteryAdapterV2Vault is Manageable {
     }
 
     function tokens() public view returns (Token[] memory) {
-        IV2Registry registry = IV2Registry(registryAddress);
+        IV2Registry registry =
+            IV2Registry(0x50c1a2eA0a861A967D9d0FFE2AE4012c2E053804);
         uint256 numTokens = registry.numTokens();
         Token[] memory _tokens = new Token[](numTokens);
         for (uint256 i = 0; i < numTokens; i++) {
@@ -301,10 +302,12 @@ contract RegisteryAdapterV2Vault is Manageable {
         IERC20 _token = IERC20(tokenAddress);
         uint256 balance = vault.balanceOf(accountAddress);
         uint256 balanceUsdc =
-            oracle.getNormalizedValueUsdc(tokenAddress, balance);
+            IOracle(0x9b8b9F6146B29CC32208f42b995E70F0Eb2807F3)
+                .getNormalizedValueUsdc(tokenAddress, balance);
         uint256 tokenBalance = _token.balanceOf(accountAddress);
         uint256 tokenBalanceUsdc =
-            oracle.getNormalizedValueUsdc(tokenAddress, tokenBalance);
+            IOracle(0x9b8b9F6146B29CC32208f42b995E70F0Eb2807F3)
+                .getNormalizedValueUsdc(tokenAddress, tokenBalance);
 
         Allowance[] memory _tokenPositionAllowances =
             tokenPositionAllowances(accountAddress, vaultAddress);
