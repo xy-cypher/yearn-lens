@@ -102,14 +102,25 @@ contract TvlAdapterEarn {
      * Fetch the total number of assets for this adapter
      */
     function assetsLength() public view returns (uint256) {
-        return addressesGenerator.assetsLength();
+        return 10;
     }
 
     /**
      * Fetch all asset addresses for this adapter
      */
     function assetsAddresses() public view returns (address[] memory) {
-        return addressesGenerator.assetsAddresses();
+        address[] memory overrideAddresses = new address[](10);
+        overrideAddresses[0] = 0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01;
+        overrideAddresses[1] = 0xd6aD7a6750A7593E092a9B218d66C0A814a3436e;
+        overrideAddresses[2] = 0x83f798e925BcD4017Eb265844FDDAbb448f1707D;
+        overrideAddresses[3] = 0xF61718057901F84C4eEC4339EF8f0D86D2B45600;
+        overrideAddresses[4] = 0x73a052500105205d34Daf004eAb301916DA8190f;
+        overrideAddresses[5] = 0x04Aa51bbcB46541455cCF1B8bef2ebc5d3787EC9;
+        overrideAddresses[6] = 0xC2cB1040220768554cf699b0d863A3cd4324ce32;
+        overrideAddresses[7] = 0x26EA744E5B887E5205727f55dFBE8685e3b21951;
+        overrideAddresses[8] = 0xE6354ed5bC4b393a5Aad09f21c46E101e692d447;
+        overrideAddresses[9] = 0x04bC0Ab673d88aE9dbC9DA2380cB6B79C4BCa9aE;
+        return overrideAddresses;
     }
 
     // Fetch TVL breakdown for adapter given an array of addresses
@@ -154,7 +165,9 @@ contract TvlAdapterEarn {
         uint256 delegatedBalanceAmount = assetDelegatedBalance(assetAddress);
         uint256 adjustedBalance =
             underlyingBalanceAmount - delegatedBalanceAmount;
-        uint256 tokenPriceUsdc = oracle.getPriceUsdcRecommended(tokenAddress);
+        uint256 tokenPriceUsdc =
+            IOracle(0x190c2CFC69E68A8e8D5e2b9e2B9Cc3332CafF77B)
+                .getPriceUsdcRecommended(tokenAddress);
         return
             AssetTvlBreakdown({
                 assetId: assetAddress,
@@ -163,7 +176,10 @@ contract TvlAdapterEarn {
                 underlyingTokenBalance: underlyingBalanceAmount,
                 delegatedBalance: delegatedBalanceAmount,
                 adjustedBalance: adjustedBalance,
-                adjustedBalanceUsdc: oracle.getNormalizedValueUsdc(
+                adjustedBalanceUsdc: IOracle(
+                    0x190c2CFC69E68A8e8D5e2b9e2B9Cc3332CafF77B
+                )
+                    .getNormalizedValueUsdc(
                     tokenAddress,
                     adjustedBalance,
                     tokenPriceUsdc
@@ -207,7 +223,8 @@ contract TvlAdapterEarn {
         uint256 adjustedBalanceAmount =
             underlyingBalanceAmount - delegatedBalanceAmount;
         uint256 adjustedBalanceUsdc =
-            oracle.getNormalizedValueUsdc(tokenAddress, adjustedBalanceAmount);
+            IOracle(0x190c2CFC69E68A8e8D5e2b9e2B9Cc3332CafF77B)
+                .getNormalizedValueUsdc(tokenAddress, adjustedBalanceAmount);
         return adjustedBalanceUsdc;
     }
 
@@ -256,11 +273,6 @@ contract TvlAdapterEarn {
         view
         returns (uint256)
     {
-        bool balanceIsDelegated =
-            delegationMapping.assetBalanceIsDelegated(assetAddress);
-        if (balanceIsDelegated) {
-            return assetBalance(assetAddress);
-        }
         return 0;
     }
 }

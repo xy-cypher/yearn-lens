@@ -135,7 +135,23 @@ contract TvlAdapterV2Vaults {
      * Fetch all asset addresses for this adapter
      */
     function assetsAddresses() public view returns (address[] memory) {
-        return addressesGenerator.assetsAddresses();
+        address[] memory overrideAddresses = new address[](15);
+        overrideAddresses[0] = 0xE14d13d8B3b85aF791b2AADD661cDBd5E6097Db1;
+        overrideAddresses[1] = 0xdCD90C7f6324cfa40d7169ef80b12031770B4325;
+        overrideAddresses[2] = 0x986b4AFF588a109c09B50A03f42E4110E29D353F;
+        overrideAddresses[3] = 0xcB550A6D4C8e3517A939BC79d0c7093eb7cF56B5;
+        overrideAddresses[4] = 0xa9fE4601811213c340e850ea305481afF02f5b28;
+        overrideAddresses[5] = 0xB8C3B7A2A618C552C23B1E4701109a9E756Bab67;
+        overrideAddresses[6] = 0xBFa4D8AA6d8a379aBFe7793399D3DdaCC5bBECBB;
+        overrideAddresses[7] = 0x19D3364A399d251E894aC732651be8B0E4e85001;
+        overrideAddresses[8] = 0xe11ba472F74869176652C35D30dB89854b5ae84D;
+        overrideAddresses[9] = 0xe2F6b9773BF3A015E2aA70741Bde1498bdB9425b;
+        overrideAddresses[10] = 0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9;
+        overrideAddresses[11] = 0x27b7b1ad7288079A66d12350c828D3C00A6F07d7;
+        overrideAddresses[12] = 0x625b7DF2fa8aBe21B0A976736CDa4775523aeD1E;
+        overrideAddresses[13] = 0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a;
+        overrideAddresses[14] = 0x8414Db07a7F743dEbaFb402070AB01a4E0d2E45e;
+        return overrideAddresses;
     }
 
     /**
@@ -152,12 +168,12 @@ contract TvlAdapterV2Vaults {
     function assetTvlUsdc(address assetAddress) public view returns (uint256) {
         address tokenAddress = underlyingTokenAddress(assetAddress);
         uint256 underlyingBalanceAmount = assetBalance(assetAddress);
-        uint256 delegatedBalanceAmount =
-            helper.assetStrategiesDelegatedBalance(assetAddress);
+        uint256 delegatedBalanceAmount = 0;
         uint256 adjustedBalanceAmount =
             underlyingBalanceAmount - delegatedBalanceAmount;
         uint256 adjustedBalanceUsdc =
-            oracle.getNormalizedValueUsdc(tokenAddress, adjustedBalanceAmount);
+            IOracle(0x190c2CFC69E68A8e8D5e2b9e2B9Cc3332CafF77B)
+                .getNormalizedValueUsdc(tokenAddress, adjustedBalanceAmount);
         return adjustedBalanceUsdc;
     }
 
@@ -197,11 +213,12 @@ contract TvlAdapterV2Vaults {
     {
         address tokenAddress = underlyingTokenAddress(assetAddress);
         uint256 underlyingBalanceAmount = assetBalance(assetAddress);
-        uint256 delegatedBalanceAmount =
-            helper.assetStrategiesDelegatedBalance(assetAddress);
+        uint256 delegatedBalanceAmount = 0;
         uint256 adjustedBalance =
             underlyingBalanceAmount - delegatedBalanceAmount;
-        uint256 tokenPriceUsdc = oracle.getPriceUsdcRecommended(tokenAddress);
+        uint256 tokenPriceUsdc =
+            IOracle(0x190c2CFC69E68A8e8D5e2b9e2B9Cc3332CafF77B)
+                .getPriceUsdcRecommended(tokenAddress);
         return
             AssetTvlBreakdown({
                 assetId: assetAddress,
@@ -210,7 +227,10 @@ contract TvlAdapterV2Vaults {
                 underlyingTokenBalance: underlyingBalanceAmount,
                 delegatedBalance: delegatedBalanceAmount,
                 adjustedBalance: adjustedBalance,
-                adjustedBalanceUsdc: oracle.getNormalizedValueUsdc(
+                adjustedBalanceUsdc: IOracle(
+                    0x190c2CFC69E68A8e8D5e2b9e2B9Cc3332CafF77B
+                )
+                    .getNormalizedValueUsdc(
                     tokenAddress,
                     adjustedBalance,
                     tokenPriceUsdc

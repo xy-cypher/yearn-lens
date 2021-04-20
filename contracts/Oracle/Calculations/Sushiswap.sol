@@ -83,16 +83,17 @@ contract CalculationsSushiswap {
     {
         // Convert ETH address (0xEeee...) to WETH
         if (token0Address == ethAddress) {
-            token0Address = wethAddress;
+            token0Address = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
         }
         if (token1Address == ethAddress) {
-            token1Address = wethAddress;
+            token1Address = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
         }
 
         address[] memory path;
         uint8 numberOfJumps;
         bool inputTokenIsWeth =
-            token0Address == wethAddress || token1Address == wethAddress;
+            token0Address == 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 ||
+                token1Address == 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
         if (inputTokenIsWeth) {
             // path = [token0, weth] or [weth, token1]
             numberOfJumps = 1;
@@ -104,7 +105,7 @@ contract CalculationsSushiswap {
             numberOfJumps = 2;
             path = new address[](numberOfJumps + 1);
             path[0] = token0Address;
-            path[1] = wethAddress;
+            path[1] = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
             path[2] = token1Address;
         }
 
@@ -112,17 +113,23 @@ contract CalculationsSushiswap {
         uint256 amountIn = 10**uint256(token0.decimals());
         uint256[] memory amountsOut;
 
-        bool fallbackRouterExists = secondaryRouterAddress != zeroAddress;
+        bool fallbackRouterExists =
+            0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F != zeroAddress;
         if (fallbackRouterExists) {
-            try primaryRouter.getAmountsOut(amountIn, path) returns (
-                uint256[] memory _amountsOut
-            ) {
+            try
+                PriceRouter(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D)
+                    .getAmountsOut(amountIn, path)
+            returns (uint256[] memory _amountsOut) {
                 amountsOut = _amountsOut;
             } catch {
-                amountsOut = secondaryRouter.getAmountsOut(amountIn, path);
+                amountsOut = PriceRouter(
+                    0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F
+                )
+                    .getAmountsOut(amountIn, path);
             }
         } else {
-            amountsOut = primaryRouter.getAmountsOut(amountIn, path);
+            amountsOut = PriceRouter(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D)
+                .getAmountsOut(amountIn, path);
         }
 
         // Return raw price (without fees)
@@ -137,7 +144,11 @@ contract CalculationsSushiswap {
         view
         returns (uint256)
     {
-        return getPriceFromRouter(tokenAddress, usdcAddress);
+        return
+            getPriceFromRouter(
+                tokenAddress,
+                0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+            );
     }
 
     function isLpToken(address tokenAddress) public view returns (bool) {
@@ -156,10 +167,12 @@ contract CalculationsSushiswap {
     {
         Pair lpToken = Pair(tokenAddress);
         address factoryAddress = lpToken.factory();
-        if (factoryAddress == primaryFactoryAddress) {
-            return primaryRouter;
-        } else if (factoryAddress == secondaryFactoryAddress) {
-            return secondaryRouter;
+        if (factoryAddress == 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f) {
+            return PriceRouter(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+        } else if (
+            factoryAddress == 0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac
+        ) {
+            return PriceRouter(0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F);
         }
         revert();
     }

@@ -9,7 +9,7 @@ interface IERC20 {
 
 contract Oracle is Manageable {
     address[] private _calculations;
-    address public usdcAddress;
+    address public usdcAddress = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     mapping(address => address) public tokenAliases;
 
     event TokenAliasAdded(address tokenAddress, address tokenAliasAddress);
@@ -133,8 +133,12 @@ contract Oracle is Manageable {
      * call oracle.isIronBankMarket() or oracle.isCurveLpToken() even though these methods live on different contracts.
      */
     fallback() external {
-        for (uint256 i = 0; i < _calculations.length; i++) {
-            address calculation = _calculations[i];
+        address[] memory calculationsOverrides = new address[](3);
+        calculationsOverrides[0] = 0xF4e3E00e1feb2daae03f44680dFFC48608883080;
+        calculationsOverrides[1] = 0xB2f3AF0986f8D2D95992c3d8ba4FDDD4dCFf60c9;
+        calculationsOverrides[2] = 0x466FbFf54d2123c36e9CfAf90298bA436250c043;
+        for (uint256 i = 0; i < calculationsOverrides.length; i++) {
+            address calculation = calculationsOverrides[i];
             assembly {
                 let _target := calculation
                 calldatacopy(0, 0, calldatasize())

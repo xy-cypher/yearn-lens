@@ -68,7 +68,7 @@ contract CalculationsCurve {
     {
         uint256 basePrice = getBasePrice(curveLpTokenAddress);
         uint256 virtualPrice = getVirtualPrice(curveLpTokenAddress);
-        IERC20 usdc = IERC20(oracle.usdcAddress());
+        IERC20 usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
         uint256 decimals = usdc.decimals();
         uint256 decimalsAdjustment = 18 - decimals;
         uint256 price =
@@ -83,10 +83,12 @@ contract CalculationsCurve {
         returns (uint256)
     {
         address poolAddress =
-            curveRegistry.get_pool_from_lp_token(curveLpTokenAddress);
+            ICurveRegistry(0x7D86446dDb609eD0F5f8684AcF30380a356b2B4c)
+                .get_pool_from_lp_token(curveLpTokenAddress);
         address underlyingCoinAddress = getUnderlyingCoinFromPool(poolAddress);
         uint256 basePrice =
-            oracle.getPriceUsdcRecommended(underlyingCoinAddress);
+            IOracle(0x190c2CFC69E68A8e8D5e2b9e2B9Cc3332CafF77B)
+                .getPriceUsdcRecommended(underlyingCoinAddress);
         return basePrice;
     }
 
@@ -96,12 +98,14 @@ contract CalculationsCurve {
         returns (uint256)
     {
         return
-            curveRegistry.get_virtual_price_from_lp_token(curveLpTokenAddress);
+            ICurveRegistry(0x7D86446dDb609eD0F5f8684AcF30380a356b2B4c)
+                .get_virtual_price_from_lp_token(curveLpTokenAddress);
     }
 
     function isCurveLpToken(address tokenAddress) public view returns (bool) {
         address poolAddress =
-            curveRegistry.get_pool_from_lp_token(tokenAddress);
+            ICurveRegistry(0x7D86446dDb609eD0F5f8684AcF30380a356b2B4c)
+                .get_pool_from_lp_token(tokenAddress);
         bool tokenHasCurvePool = poolAddress != address(0);
         return tokenHasCurvePool;
     }
@@ -126,7 +130,8 @@ contract CalculationsCurve {
         returns (address)
     {
         address[8] memory coins =
-            curveRegistry.get_underlying_coins(poolAddress);
+            ICurveRegistry(0x7D86446dDb609eD0F5f8684AcF30380a356b2B4c)
+                .get_underlying_coins(poolAddress);
 
         // Use first coin from pool and if that is empty (due to error) fall back to second coin
         address preferredCoinAddress = coins[0];

@@ -139,7 +139,6 @@ def oracle(
     return Oracle.at("0x83d95e0d5f402511db06817aff3f9ea88224b030")
 
     oracle = Oracle.deploy(managementList, usdcAddress, {"from": management})
-
     oracle.addTokenAliases(
         [
             [steCrvAddress, wethAddress],
@@ -153,15 +152,17 @@ def oracle(
     )
 
     calculationsSushiswap = CalculationsSushiswap.deploy(
-        uniswapRouterAddress,
-        uniswapFactoryAddress,
-        sushiswapRouterAddress,
-        sushiswapFactoryAddress,
-        usdcAddress,
+        "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+        "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+        "0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F",
+        "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac",
+        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
         {"from": management},
     )
     calculationsCurve = CalculationsCurve.deploy(
-        curveRegistryAddress, oracle, {"from": management}
+        "0x7D86446dDb609eD0F5f8684AcF30380a356b2B4c",
+        "0x83d95e0D5f402511dB06817Aff3f9eA88224B030",
+        {"from": management},
     )
     calculationsIronBank = CalculationsIronBank.deploy(
         unitrollerAddress, oracle, {"from": management}

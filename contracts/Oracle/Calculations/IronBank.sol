@@ -35,7 +35,9 @@ contract CalculationsIronBank {
     }
 
     function getIronBankMarkets() public view returns (address[] memory) {
-        return IUnitroller(unitrollerAddress).getAllMarkets();
+        return
+            IUnitroller(0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB)
+                .getAllMarkets();
     }
 
     function isIronBankMarket(address tokenAddress) public view returns (bool) {
@@ -66,7 +68,7 @@ contract CalculationsIronBank {
         IERC20 underlyingToken = IERC20(underlyingTokenAddress);
         uint8 underlyingTokenDecimals = underlyingToken.decimals();
 
-        IOracle oracle = IOracle(oracleAddress);
+        IOracle oracle = IOracle(0x190c2CFC69E68A8e8D5e2b9e2B9Cc3332CafF77B);
         uint256 underlyingTokenPrice =
             oracle.getPriceUsdcRecommended(underlyingTokenAddress);
 
