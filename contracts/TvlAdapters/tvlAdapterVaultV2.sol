@@ -135,7 +135,7 @@ contract TvlAdapterV2Vaults {
      * Fetch all asset addresses for this adapter
      */
     function assetsAddresses() public view returns (address[] memory) {
-        address[] memory overrideAddresses = new address[](15);
+        address[] memory overrideAddresses = new address[](13);
         overrideAddresses[0] = 0xE14d13d8B3b85aF791b2AADD661cDBd5E6097Db1;
         overrideAddresses[1] = 0xdCD90C7f6324cfa40d7169ef80b12031770B4325;
         overrideAddresses[2] = 0x986b4AFF588a109c09B50A03f42E4110E29D353F;
@@ -149,8 +149,6 @@ contract TvlAdapterV2Vaults {
         overrideAddresses[10] = 0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9;
         overrideAddresses[11] = 0x27b7b1ad7288079A66d12350c828D3C00A6F07d7;
         overrideAddresses[12] = 0x625b7DF2fa8aBe21B0A976736CDa4775523aeD1E;
-        overrideAddresses[13] = 0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a;
-        overrideAddresses[14] = 0x8414Db07a7F743dEbaFb402070AB01a4E0d2E45e;
         return overrideAddresses;
     }
 
